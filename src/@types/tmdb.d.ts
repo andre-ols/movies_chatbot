@@ -1,4 +1,4 @@
-export namespace Tmdb {
+declare namespace Tmdb {
   export class PaginatedResponse<T> {
     page: number;
     results: T[];
