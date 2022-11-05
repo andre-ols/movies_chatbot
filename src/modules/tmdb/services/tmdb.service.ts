@@ -1,7 +1,9 @@
 export class TmdbService {
   private readonly apiBaseUrl: string;
 
-  constructor(private readonly apiKey: string, private readonly language: string = 'pt-BR') {}
+  constructor(private readonly apiKey: string, private readonly language: string = 'pt-BR') {
+    this.apiBaseUrl = 'https://api.themoviedb.org/3';
+  }
 
   private async get<T>(
     path: string,
