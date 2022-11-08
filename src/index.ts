@@ -1,10 +1,32 @@
-import { intentMap } from './modules/dialogflow/intents';
-import { SendDialogflowService } from './modules/dialogflow/services/send.service';
+import pkg from 'whatsapp-web.js';
 
-const sendDialogflowService = new SendDialogflowService('movies-qyyv', '123456', 'pt-BR');
+const { Client, LocalAuth } = pkg;
 
-const response = await sendDialogflowService.detectIntent('onde assitir?');
+const client = new Client({
+  authStrategy: new LocalAuth(),
+  puppeteer: { headless: false },
+});
 
-const intentName = response.queryResult.intent.displayName;
+client.initialize();
 
-intentMap.get(intentName)(response);
+client.on('loading_screen', (percent, message) => {
+  console.log('LOADING SCREEN', percent, message);
+});
+
+client.on('qr', (qr) => {
+  // NOTE: This event will not be fired if a session is specified.
+  console.log('QR RECEIVED', qr);
+});
+
+client.on('authenticated', () => {
+  console.log('AUTHENTICATED');
+});
+
+client.on('auth_failure', (msg) => {
+  // Fired if session restore was unsuccessful
+  console.error('AUTHENTICATION FAILURE', msg);
+});
+
+client.on('ready', () => {
+  console.log('READY');
+});
