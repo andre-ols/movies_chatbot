@@ -3,7 +3,7 @@ import { google } from '@google-cloud/dialogflow/build/protos/protos';
 import { resolve } from 'path';
 import { readFileSync } from 'fs';
 
-const KEY_FILE = 'keys.json';
+const KEY_FILE = 'key.json';
 
 export class SendDialogflowService {
   private sessionClient: SessionsClient;
