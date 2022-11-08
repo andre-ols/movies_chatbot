@@ -1,3 +1,5 @@
+import axios from 'axios';
+
 export class TmdbService {
   private readonly apiBaseUrl: string;
 
@@ -16,13 +18,13 @@ export class TmdbService {
       url.searchParams.append(key, String(value));
     }
 
-    const response = await fetch(url.toString(), {
+    const { data } = await axios.get(url.toString(), {
       headers: {
         Authorization: `Bearer ${this.apiKey}`,
       },
     });
-    const result = await response.json();
-    return result;
+
+    return data;
   }
 
   async searchMovie(
@@ -42,11 +44,11 @@ export class TmdbService {
   }
 
   async playingNow(): Promise<Tmdb.PlayingNow> {
-    return this.get('/movie/now_playing');
+    return this.get('/movie/now_playing?region=BR');
   }
 
   async popularMovies(): Promise<Tmdb.PopularMovies> {
-    return this.get('/movie/popular');
+    return this.get('/movie/popular?region=BR');
   }
 
   async getMovieImages(id: number): Promise<Tmdb.MovieImages.Root> {

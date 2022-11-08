@@ -1,4 +1,5 @@
 /node_modules
 /dist
 /.vscode
-
+/.wwebjs_auth
+.env

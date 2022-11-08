@@ -3,7 +3,7 @@ import { google } from '@google-cloud/dialogflow/build/protos/protos';
 import { resolve } from 'path';
 import { readFileSync } from 'fs';
 
-const KEY_FILE = resolve(__dirname, 'keys.json');
+const KEY_FILE = 'keys.json';
 
 export class SendDialogflowService {
   private sessionClient: SessionsClient;
@@ -20,10 +20,7 @@ export class SendDialogflowService {
     this.sessionPath = this.sessionClient.projectAgentSessionPath(this.projectId, this.sessionId);
   }
 
-  async detectIntent(
-    query: string,
-    contexts: google.cloud.dialogflow.v2.IContext[],
-  ): Promise<google.cloud.dialogflow.v2.IDetectIntentResponse> {
+  async detectIntent(query: string): Promise<google.cloud.dialogflow.v2.IDetectIntentResponse> {
     // The text query request.
     const request: google.cloud.dialogflow.v2.IDetectIntentRequest = {
       session: this.sessionPath,
@@ -32,9 +29,6 @@ export class SendDialogflowService {
           text: query,
           languageCode: this.languageCode,
         },
-      },
-      queryParams: {
-        contexts: contexts,
       },
     };
 
