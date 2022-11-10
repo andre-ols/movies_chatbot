@@ -1,6 +1,6 @@
 import Dialogflow, { SessionsClient } from '@google-cloud/dialogflow';
 import { google } from '@google-cloud/dialogflow/build/protos/protos';
-import { resolve } from 'path';
+import { resolve, dirname } from 'path';
 import { readFileSync } from 'fs';
 
 const KEY_FILE = 'key.json';
@@ -14,8 +14,11 @@ export class SendDialogflowService {
     private readonly sessionId: string,
     private readonly languageCode: string,
   ) {
+    // get key.json from root project
+    const keyFile = resolve(process.cwd(), KEY_FILE);
+
     this.sessionClient = new Dialogflow.SessionsClient({
-      keyFilename: resolve(KEY_FILE),
+      keyFilename: keyFile,
     });
     this.sessionPath = this.sessionClient.projectAgentSessionPath(this.projectId, this.sessionId);
   }
@@ -59,8 +62,9 @@ export class SendDialogflowService {
 
     // Detects speech in the audio file
     const [response] = await this.sessionClient.detectIntent(request);
+
     console.log('Detected intent');
-    const result = response.queryResult;
+    const result = response.queryResult!;
     // Print the result if the query was fulfilled.
     if (result.fulfillmentText) {
       console.log(`  Fulfillment Text: ${result.fulfillmentText}`);

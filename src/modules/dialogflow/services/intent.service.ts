@@ -1,48 +1,70 @@
 import { TmdbService } from '@/modules/tmdb/services/tmdb.service';
+import { MessageService } from '@/modules/whastapp/service/message.service';
 import { google } from '@google-cloud/dialogflow/build/protos/protos';
 
 export class IntentService {
-  constructor(private tmdb: TmdbService) {}
+  constructor(private tmdb: TmdbService, private messageService: MessageService) {}
 
-  public welcome(agent: google.cloud.dialogflow.v2.IDetectIntentResponse) {
-    console.log(agent.queryResult.fulfillmentText);
+  async welcome(agent: google.cloud.dialogflow.v2.IDetectIntentResponse, phone: string) {
+    const message = agent.queryResult?.fulfillmentText!;
+    await this.messageService.sendTextMessage(message, phone);
   }
 
-  fallback(agent: google.cloud.dialogflow.v2.IDetectIntentResponse) {
-    console.log(agent.queryResult.fulfillmentText);
+  async fallback(agent: google.cloud.dialogflow.v2.IDetectIntentResponse, phone: string) {
+    const message = agent.queryResult?.fulfillmentText!;
+    await this.messageService.sendTextMessage(message, phone);
   }
 
-  async searchMovie(agent: google.cloud.dialogflow.v2.IDetectIntentResponse) {
-    const title = agent.queryResult.parameters.fields.movie.stringValue;
-    const movie = await this.tmdb.searchMovie({ query: title });
+  async searchMovie(agent: google.cloud.dialogflow.v2.IDetectIntentResponse, phone: string) {
+    const title = agent.queryResult?.parameters?.fields?.movie.stringValue!;
 
-    console.log({
-      title: movie.results[0].title,
-      overview: movie.results[0].overview,
-    });
+    const movies = await this.tmdb.searchMovie({ query: title });
+
+    const rows = movies.results.map((movie) => ({
+      title: movie.title,
+      id: movie.id.toString(),
+    }));
+
+    await this.messageService.sendListMessage(
+      {
+        title: '*Filmes relacionados*',
+        rows,
+      },
+      phone,
+    );
   }
 
-  async movieProviders(agent: google.cloud.dialogflow.v2.IDetectIntentResponse) {
-    const title = agent.queryResult.outputContexts[0].parameters.fields.movie.stringValue;
-
-    const movie = await this.tmdb.searchMovie({ query: title });
-    const providers = await this.tmdb.getProviders(movie.results[0].id);
-
-    console.log({
-      title: movie.results[0].title,
-      providers: providers.results.BR.flatrate,
-    });
-  }
-
-  async moviesInTheaters() {
+  async moviesInTheaters(agent: google.cloud.dialogflow.v2.IDetectIntentResponse, phone: string) {
     const movies = await this.tmdb.playingNow();
 
-    console.log(movies);
+    const rows = movies.results.map((movie) => ({
+      title: movie.title,
+      id: movie.id.toString(),
+    }));
+
+    await this.messageService.sendListMessage(
+      {
+        title: '*Filmes em cartaz no Brasil*',
+        rows,
+      },
+      phone,
+    );
   }
 
-  async popularMovies() {
+  async popularMovies(agent: google.cloud.dialogflow.v2.IDetectIntentResponse, phone: string) {
     const movies = await this.tmdb.popularMovies();
 
-    console.log(movies);
+    const rows = movies.results.map((movie) => ({
+      title: movie.title,
+      id: movie.id.toString(),
+    }));
+
+    await this.messageService.sendListMessage(
+      {
+        title: '*Filmes populares*',
+        rows,
+      },
+      phone,
+    );
   }
 }

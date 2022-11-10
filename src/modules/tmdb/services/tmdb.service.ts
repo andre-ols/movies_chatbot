@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { Tmdb } from '../model/tmdb';
 
 export class TmdbService {
   private readonly apiBaseUrl: string;
@@ -9,7 +10,7 @@ export class TmdbService {
 
   private async get<T>(
     path: string,
-    params: Record<string, string | number | boolean> = {},
+    params: Partial<Record<string, string | number | boolean>> = {},
   ): Promise<T> {
     const url = new URL(`${this.apiBaseUrl}${path}`);
     url.searchParams.append('language', this.language);
@@ -55,7 +56,7 @@ export class TmdbService {
     return this.get(`/movie/${id}/images`);
   }
 
-  async getUrlImage(path: string): Promise<string> {
+  getUrlImage(path: string): string {
     return `https://image.tmdb.org/t/p/w500${path}`;
   }
 

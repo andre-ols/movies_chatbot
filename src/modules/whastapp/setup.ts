@@ -21,6 +21,10 @@ client.on('qr', (qr) => {
   });
 });
 
+client.on('loading_screen', (percent, message) => {
+  console.log('LOADING SCREEN', percent, message);
+});
+
 client.on('authenticated', () => {
   console.log('AUTHENTICATED');
 });

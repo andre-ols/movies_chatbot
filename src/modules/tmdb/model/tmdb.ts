@@ -1,5 +1,5 @@
-declare namespace Tmdb {
-  export class PaginatedResponse<T> {
+export namespace Tmdb {
+  export interface PaginatedResponse<T> {
     page: number;
     results: T[];
     total_pages: number;
@@ -95,18 +95,18 @@ declare namespace Tmdb {
   export namespace MovieProviders {
     export interface Root {
       id: number;
-      results: Results;
+      results?: Results;
     }
 
     interface Results {
-      BR: Br;
+      BR?: Br;
     }
 
     interface Br {
-      link: string;
-      flatrate: Flatrate[];
-      rent: Rent[];
-      buy: Buy[];
+      link?: string;
+      flatrate?: Flatrate[];
+      rent?: Rent[];
+      buy?: Buy[];
     }
 
     interface Flatrate {
